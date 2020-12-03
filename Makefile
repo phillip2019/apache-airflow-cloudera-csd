@@ -37,11 +37,11 @@ dist: clean validate
 
 validate: src/descriptor/service.sdl
 	@echo "*** Validating service config ..."
-	@java -jar ../../cloudera/cm_ext/validator/target/validator.jar -s src/descriptor/service.sdl
+	@java -jar ./../cloudera/cm_ext/validator/target/validator.jar -s src/descriptor/service.sdl
 
 validate-mdl: src/descriptor/service.mdl
 	@echo "*** Validating monitor config ..."
-	@java -jar ../../cloudera/cm_ext/validator/target/validator.jar -z src/descriptor/service.mdl
+	@java -jar ./../cloudera/cm_ext/validator/target/validator.jar -z src/descriptor/service.mdl
 
 clean:
 	rm -rf target

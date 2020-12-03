@@ -60,6 +60,7 @@ function deploy_client_config {
     fi
   done <${DIR}/airflow.properties
 
+  log "DB_TYPE: $DB_TYPE"
   # Building SQL connection string
   if [ "$DB_TYPE" == "SQLite3" ]; then
     VAL="sqlite:///${AIRFLOW_HOME}/airflow.db"
@@ -71,6 +72,9 @@ function deploy_client_config {
     unset VAL
     echo "ERROR: core:sql_alchemy_conn"
   fi
+
+
+  log "sql_alchemy_conn: ${VAL}, Target file: ${DIR}/airflow.cfg"
   if [ -n "$VAL" ]; then
     crudini --set ${DIR}/airflow.cfg "core" "sql_alchemy_conn" "$VAL"
     crudini --set ${DIR}/airflow.cfg "celery" "result_backend" "db+${VAL}"
@@ -89,6 +93,10 @@ function deploy_client_config {
   if [ -n "$VAL" ]; then
     crudini --set ${DIR}/airflow.cfg "celery" "broker_url" "$VAL"
   fi
+  
+  # update fernet_key
+  sed -i "s#fernet_key = temporary_fernetkey#fernet_key = x2ldxSePcm-J7AZcsqqvxldLklFUB_eaNBib_bWfrFc=#g" ${DIR}/airflow.cfg
+  
 
   # Append our AIRFLOW_HOME at the end to ensure that it's there
   echo -e "\nexport AIRFLOW_HOME=$AIRFLOW_HOME" >> ${DIR}/airflow-env.sh
@@ -101,7 +109,7 @@ function update_daemon_config {
   export AIRFLOW_CONFIG=${DIR}/airflow.cfg
   log "** AIRFLOW_CONFIG: $AIRFLOW_CONFIG"
   deploy_client_config ${DIR}
-  chgrp airflow ${DIR}/airflow.cfg ${DIR}/airflow-env.sh
+  chgrp hive ${DIR}/airflow.cfg ${DIR}/airflow-env.sh
 }
 
 log "*** AIRFLOW_DIR: $AIRFLOW_DIR"
@@ -165,4 +173,5 @@ case $CMD in
     ;;
 
 esac
+
 

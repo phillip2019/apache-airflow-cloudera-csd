@@ -36,6 +36,16 @@
       "required" : true,
       "configurableInWizard": true
     },
+   {
+      "name" : "airflow_authenticate",
+      "label" : "Airflow authenticate",
+      "description" : "The home directory for Airflow.",
+      "configName" : "AIRFLOW_AUTHENTICATE",
+      "type" : "boolean",
+      "default" : "false",
+      "required" : true,
+      "configurableInWizard": true
+    },
     {
       "name" : "dags_folder",
       "label" : "Dags Folder",
@@ -55,7 +65,7 @@
       "required" : true
     },
     {
-      "name": "database_type",
+      "name": "db_type",
       "label": "Database Type",
       "description": "Type of database used for Airflow.",
       "configName" : "DB_TYPE",
@@ -66,7 +76,7 @@
       "configurableInWizard": true
     },
     {
-      "name": "database_host",
+      "name": "db_host",
       "label": "Airflow Database Host",
       "description": "Name of host where the Airflow database is running. Not necessary for SQLite3.",
       "configName" : "DB_HOST",
@@ -75,7 +85,7 @@
       "configurableInWizard": true
     },
     {
-      "name": "database_port",
+      "name": "db_port",
       "label": "Database port",
       "description": "Port on host where the Airflow database is running. Not necessary for SQLite3.",
       "configName" : "DB_PORT",
@@ -84,7 +94,7 @@
       "configurableInWizard": true
     },
     {
-      "name": "database_name",
+      "name": "db_name",
       "label": "Database Name",
       "description": "Name of the Airflow database.",
       "configName" : "DB_NAME",
@@ -93,7 +103,7 @@
       "configurableInWizard": true
     },
     {
-      "name": "database_username",
+      "name": "db_user",
       "label": "Database Username",
       "description": "The username to use to log into the Airflow database. Not necessary for SQLite3.",
       "configName" : "DB_USER",
@@ -102,7 +112,7 @@
       "configurableInWizard": true
     },
     {
-      "name": "database_password",
+      "name": "db_pass",
       "label": "Database Password",
       "description": "Password for Airflow database. Not necessary for SQLite3.",
       "configName" : "DB_PASS",
@@ -136,22 +146,13 @@
       "type" : "string",
       "default" : ""
     },
-    {
-      "name" : "Airflow.password",
-      "label" : "Airflow Password",
-      "description" : "Password of the Airflow user.",
-      "type" : "password",
-      "default" : ""
-    },
-    {
-      "name" : "broker_url",
-      "label" : "Broker URL",
-      "description" : "Broker URL value for Celery ",
-      "type" : "string",
-      "default" : "sqla+mysql://username:password@host:3306/dbname",	
-      "configurableInWizard": true,
-      "required" : "true"
-    },
+    //{
+    //  "name" : "Airflow.password",
+    //  "label" : "Airflow Password",
+    //  "description" : "Password of the Airflow user.",
+    //  "type" : "password",
+    //  "default" : ""
+    //},
     {
       "name" : "celery_broker_port",
       "label" : "Celery Broker Port",
@@ -208,14 +209,14 @@
 //      "type" : "string",
 //      "default" : ""
 //    },
-//    {
-//      "name" : "remote_log_conn_id",
-//      "label" : "Remote Log Connection ID",
-//      "description" : "The Airflow connection id that provides access to the storage location.",
-//      "configName" : "core:remote_log_conn_id",
-//      "type" : "string",
-//      "default" : ""
-//    },
+     {
+      "name" : "remote_log_conn_id",
+      "label" : "Remote Log Connection ID",
+      "description" : "The Airflow connection id that provides access to the storage location.",
+      "configName" : "core:remote_log_conn_id",
+      "type" : "string",
+      "default" : ""
+    },
 //    {
 //      "name" : "encrypt_s3_logs",
 //      "label" : "Encrypt S3 Logs",
@@ -331,7 +332,6 @@
       "type" : "string",
       "default" : ""
     },
-// TODO: kerberos
 //    {
 //      "name" : "security",
 //      "label" : "Security",
@@ -351,12 +351,27 @@
       "default" : "airflow.api.client.local_client"
     },
     {
+      "name" : "base_url",
+      "label" : "Webserver Base URL",
+      "description" : "The base URL of your website as Airflow cannot guess what DNS name you are using. This is used in automated emails that Airflow sends to point links to the right web server.",
+      "configName" : "webserver:base_url",
+      "type" : "string",
+      "default" : "http://localhost:8080"
+    },
+    {
+      "name" : "web_server_port",
+      "label" : "Web Server Port",
+      "description" : "The port on which to run the web server.",
+      "configName" : "webserver:web_server_port",
+      "type" : "port",
+      "default" : 8080
+    },
+    {
       "name" : "endpoint_url",
       "label" : "Endpoint URL",
       "description" : "URL of the API running on the webserver.",
       "configName" : "cli:endpoint_url",
       "type" : "string",
-// TODO: update localhost
       "default" : "http://localhost:8080"
     },
     {
@@ -367,6 +382,15 @@
       "type" : "string_enum",
       "validValues" : [ "airflow.api.auth.backend.default", "airflow.api.auth.backend.deny_all", "airflow.api.auth.backend.kerberos_auth", "airflow.contrib.auth.backends.password_auth" ],
       "default" : "airflow.api.auth.backend.default"
+    },
+    {
+      "name" : "webserver_auth_backend",
+      "label" : "Enable Airflow Webserver Authentication",
+      "description" : "Airflow authentication backend type.",
+      "configName" : "webserver:auth_backend",
+      "type" : "string_enum",
+      "validValues" : [ "airflow.contrib.auth.backends.password_auth" ],
+      "default" : "airflow.contrib.auth.backends.password_auth"
     },
     {
       "name" : "default_owner",
@@ -416,14 +440,14 @@
       "type" : "string",
       "default" : ""
     },
-//    {
-//      "name" : "email_backend",
-//      "label" : "Email Backend",
-//      "description" : "Backend class for Email.",
-//      "configName" : "email:email_backend",
-//      "type" : "string",
-//      "default" : "airflow.utils.email.send_email_smtp"
-//    },
+    {
+      "name" : "email_backend",
+      "label" : "Email Backend",
+      "description" : "Backend class for Email.",
+      "configName" : "email:email_backend",
+      "type" : "string",
+      "default" : "airflow.utils.email.send_email_smtp"
+    },
     {
       "name" : "smtp_host",
       "label" : "SMTP Host",
@@ -481,12 +505,20 @@
       "default" : ""
     },
     {
-      "name" : "fernet_key",
-      "label" : "Fernet Key",
-      "description" : "Secret key used to encrypt connection passwords in the database. Generate via: /opt/cloudera/parcels/AIRFLOW/bin/python -c 'from cryptography.fernet import Fernet;key=Fernet.generate_key().decode();print key'",
-      "configName" : "core:fernet_key",
-      "type" : "password",
-      "default" : ""
+      "name" : "principal",
+      "label" : "Kerberos Principal",
+      "description" : "Kerberos Principal. It gets augmented with the FQDN.",
+      "configName" : "kerberos:principal",
+      "type" : "string",
+      "default" : "airflow"
+    },
+    {
+      "name" : "expose_config",
+      "label" : "Expose Config",
+      "description" : "Expose the configuration file in the web server.",
+      "configName" : "webserver:expose_config",
+      "type" : "boolean",
+      "default" : false
     }
   ],
   "gateway" : {
@@ -499,24 +531,23 @@
       "program" : "scripts/control.sh",
       "args" : [ "client" ],
       "environmentVariables" : {
-        "dbType" : "${dbType}",
-        "dbHost" : "${dbHost}",
-        "dbUser" : "${dbUser}",
-        "dbName" : "${dbName}",
-        "dbPort" : "${dbPort}",
-        "dbPass" : "${dbPass}",
-	"broker_url": "${broker_url}",
-        "authenticate" : "${Airflow.authenticate}",
-        "AIRFLOW_USER" : "${Airflow.username}",
-        "AIRFLOW_PASS" : "${Airflow.password}",
-        "AIRFLOW_EMAIL" : "${Airflow.email}",
+        "DB_TYPE" : "${db_type}",
+        "DB_HOST" : "${db_host}",
+        "DB_USER" : "${db_user}",
+        "DB_NAME" : "${db_name}",
+        "DB_PORT" : "${db_port}",
+        "DB_PASS" : "${db_pass}",
+        "authenticate" : "${airflow_authenticate}",
+      //  "AIRFLOW_USER" : "${Airflow_username}",
+      //  "AIRFLOW_PASS" : "${Airflow.password}",
+        "AIRFLOW_EMAIL" : "${email_backend}",
         "airflow_home" : "${airflow_home}",
         "AIRFLOW_HOME" : "${airflow_home}",
         "dags_folder" : "${dags_folder}",
         "base_log_folder" : "${base_log_folder}",
-        "remote_base_log_folder" : "${remote_base_log_folder}",
+      //  "remote_base_log_folder" : "${remote_base_log_folder}",
         "remote_log_conn_id" : "${remote_log_conn_id}",
-        "encrypt_s3_logs" : "${encrypt_s3_logs}",
+      //  "encrypt_s3_logs" : "${encrypt_s3_logs}",
         "executor" : "${executor}",
         "sql_alchemy_pool_size" : "${sql_alchemy_pool_size}",
         "sql_alchemy_pool_recycle" : "${sql_alchemy_pool_recycle}",
@@ -527,14 +558,14 @@
         "max_active_runs_per_dag" : "${max_active_runs_per_dag}",
         "default_owner" : "${default_owner}",
         "web_server_port" : "${web_server_port}",
-        "security" : "${security}",
-        "keytab" : "${keytab}",
-        "reinit_frequency" : "${reinit_frequency}",
+       // "security" : "${security}",
+       // "keytab" : "${keytab}",
+      // "reinit_frequency" : "${reinit_frequency}",
         "principal" : "${principal}",
         "expose_config" : "${expose_config}",
-        "load_examples" : "${load_examples}"
+        "load_examples" : "${load_examples}",
         "AIRFLOW_CONFIG" : "/etc/airflow/conf/airflow.cfg",
-        "DB_PASS" : "${database_password}",
+        "DB_PASS" : "${db_pass}",
         "CELERY_BROKER_PASS" : "${celery_broker_password}"
       }
     },
@@ -597,8 +628,6 @@
       "startRunner" : {
         "program" : "scripts/control.sh",
         "args" : [ "start_webserver" ]
-// TODO
-//        "args" : [ "start_webserver", "-l ${log_dir}/airflow-WEBSERVER-${host}.log" ]
       },
       "configWriter" : {
         "auxConfigGenerators" : [
@@ -634,7 +663,6 @@
           "configName" : "webserver:auth_backend",
           "type" : "string_enum",
           "validValues" : [ "airflow.contrib.auth.backends.password_auth" ],
-//          "validValues" : [ "airflow.contrib.auth.backends.password_auth", "airflow.contrib.auth.backends.ldap_auth" ],
           "default" : "airflow.contrib.auth.backends.password_auth"
         },
         {
@@ -651,7 +679,6 @@
           "description" : "The base URL of your website as Airflow cannot guess what DNS name you are using. This is used in automated emails that Airflow sends to point links to the right web server.",
           "configName" : "webserver:base_url",
           "type" : "string",
-// TODO: update localhost
           "default" : "http://localhost:8080"
         },
         {
@@ -773,14 +800,7 @@
           "validValues" : [ "LR", "TB", "RL", "BT" ],
           "default" : "LR"
         },
-//        {
-//          "name" : "demo_mode",
-//          "label" : "Demo Mode",
-//          "description" : "Puts the webserver in demonstration mode; blurs the names of Operators for privacy.",
-//          "configName" : "webserver:demo_mode",
-//          "type" : "boolean",
-//          "default" : false
-//        },
+
         {
           "name" : "log_fetch_timeout_sec",
           "label" : "Log fetch timeout sec",
@@ -822,7 +842,7 @@
         "modifiable" : true,
         "loggingType" : "other"
       },
-// TODO
+
       "stopRunner" : {
         "runner" : {
           "program" : "scripts/stop_airflow_webserver.sh"
@@ -837,7 +857,7 @@
         "program" : "scripts/control.sh",
         "args" : [ "start_scheduler" ]
       },
-// TODO
+
       "stopRunner" : {
         "runner" : {
           "program" : "scripts/stop_airflow_scheduler.sh"
@@ -946,38 +966,7 @@
           "type" : "boolean",
           "default" : true
         },
-//        {
-//          "name" : "statsd_on",
-//          "label" : "statsd on",
-//          "description" : "Statsd (https://github.com/etsy/statsd) integration settings.",
-//          "configName" : "scheduler:statsd_on",
-//          "type" : "boolean",
-//          "default" : false
-//        },
-//        {
-//          "name" : "statsd_host",
-//          "label" : "statsd_host",
-//          "description" : "Statsd (https://github.com/etsy/statsd) integration settings.",
-//          "configName" : "scheduler:statsd_host",
-//          "type" : "string",
-//          "default" : "localhost"
-//        },
-//        {
-//          "name" : "statsd_port",
-//          "label" : "statsd port",
-//          "description" : "Statsd (https://github.com/etsy/statsd) integration settings.",
-//          "configName" : "scheduler:statsd_port",
-//          "type" : "port",
-//          "default" : 8125
-//        },
-//        {
-//          "name" : "statsd_prefix",
-//          "label" : "statsd prefix",
-//          "description" : "Statsd (https://github.com/etsy/statsd) integration settings.",
-//          "configName" : "scheduler:statsd_prefix",
-//          "type" : "string",
-//          "default" : "airflow"
-//        },
+
         {
           "name" : "max_threads",
           "label" : "Max Threads",
@@ -1029,7 +1018,6 @@
         "program" : "scripts/control.sh",
         "args" : [ "start_worker" ]
       },
-// TODO
       "stopRunner" : {
         "runner" : {
           "program" : "scripts/stop_airflow_worker.sh"
@@ -1054,14 +1042,6 @@
         ]
       },
       "parameters" : [
-//        {
-//          "name" : "celery_app_name",
-//          "label" : "Celery App Name",
-//          "description" : "The app name that will be used by celery.",
-//          "configName" : "celery:celery_app_name",
-//          "type" : "string",
-//          "default" : "airflow.executors.celery_executor"
-//        },
         {
           "name" : "worker_concurrency",
           "label" : "Celery Concurrency",
@@ -1102,7 +1082,7 @@
         "program" : "scripts/control.sh",
         "args" : [ "start_flower" ]
       },
-// TODO
+
       "stopRunner" : {
         "runner" : {
           "program" : "scripts/stop_airflow_flower.sh"
@@ -1227,14 +1207,6 @@
           "type" : "long",
           "default" : 3600,
           "unit" : "seconds"
-//        },
-//        {
-//          "name" : "ccache",
-//          "label" : "Kerberos Ccache",
-//          "description" : "Kerberos ccache location.",
-//          "configName" : "kerberos:ccache",
-//          "type" : "string",
-//          "default" : "/tmp/airflow_krb5_ccache"
         }
       ],
       "topology" : {
@@ -1243,3 +1215,4 @@
     }
   ]
 }
+

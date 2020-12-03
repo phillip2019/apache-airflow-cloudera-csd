@@ -4,19 +4,19 @@
 # Creating the AIRFLOW_HOME directory
 if [ ! -d ${airflow_home} ]; then
     mkdir -p ${airflow_home}
-    chown -R airflow:airflow ${airflow_home}
+    chown -R airflow:hive ${airflow_home}
 fi
 
 # Creating the Airflow log directory
 if [ ! -d ${base_log_folder} ]; then
     mkdir -p ${base_log_folder}
-    chown -R airflow:airflow ${base_log_folder}
+    chown -R airflow:hive ${base_log_folder}
 fi
 
 # Creating dags folder
 if [ ! -d ${dags_folder} ]; then
     mkdir -p ${dags_folder}
-    chown -R airflow:airflow ${dags_folder}
+    chown -R airflow:hive ${dags_folder}
     chmod 775 ${dags_folder}
 fi
 
@@ -75,6 +75,8 @@ while read line; do
     fi
 done < ${airflow_home}/airflow.cfg
 
+# update fernet_key
+sed -i "s#fernet_key = temporary_fernetkey#fernet_key = x2ldxSePcm-J7AZcsqqvxldLklFUB_eaNBib_bWfrFc=#g" ${airflow_home}/airflow.cfg
 
 echo "Creating Airflow user..."
 # Creating Airflow User
